@@ -1,10 +1,3 @@
-//! Blinks an LED
-//!
-//! This assumes that a LED is connected to GPIO4.
-//! Depending on your target and the board you are using you should change the pin.
-//! If your board doesn't have on-board LEDs don't forget to add an appropriate resistor.
-//!
-
 use embedded_graphics::mono_font::ascii::*;
 use embedded_graphics::mono_font::iso_8859_14::FONT_8X13_ITALIC;
 use embedded_graphics::mono_font::MonoTextStyleBuilder;
