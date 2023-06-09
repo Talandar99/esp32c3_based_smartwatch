@@ -5,19 +5,27 @@
 //! If your board doesn't have on-board LEDs don't forget to add an appropriate resistor.
 //!
 
+use embedded_graphics::mono_font::ascii::*;
+use embedded_graphics::mono_font::iso_8859_14::FONT_8X13_ITALIC;
+use embedded_graphics::mono_font::MonoTextStyleBuilder;
+use embedded_graphics::pixelcolor::BinaryColor;
+use embedded_graphics::prelude::Point;
+use embedded_graphics::text::{Baseline, Text};
+use embedded_graphics::Drawable;
 use esp_idf_hal::delay::{Delay, FreeRtos};
 use esp_idf_hal::gpio::*;
+use esp_idf_hal::i2c;
 use esp_idf_hal::peripherals::Peripherals;
+use esp_idf_hal::units::FromValueType;
+use ssd1306::prelude::DisplayConfig;
+use ssd1306::rotation::DisplayRotation;
+use ssd1306::size::DisplaySize128x64;
+use ssd1306::{I2CDisplayInterface, Ssd1306};
 
 fn main() -> anyhow::Result<()> {
     esp_idf_sys::link_patches();
 
     let peripherals = Peripherals::take().unwrap();
-    //LEDs
-    let mut led0 = PinDriver::output(peripherals.pins.gpio20)?;
-    let mut led1 = PinDriver::output(peripherals.pins.gpio8)?;
-    let mut led2 = PinDriver::output(peripherals.pins.gpio7)?;
-    let mut led3 = PinDriver::output(peripherals.pins.gpio21)?;
     //Buttons
     let mut button0 = PinDriver::input(peripherals.pins.gpio2)?;
     let mut button1 = PinDriver::input(peripherals.pins.gpio3)?;
@@ -29,42 +37,68 @@ fn main() -> anyhow::Result<()> {
     button2.set_pull(Pull::Down)?;
     button3.set_pull(Pull::Down)?;
 
+    //i2c
+    let mut sda = peripherals.pins.gpio6;
+    let mut scl = peripherals.pins.gpio7;
+    let mut _cfg = i2c::config::Config::new().baudrate(400.kHz().into());
+    let i2c = i2c::I2cDriver::new(peripherals.i2c0, sda, scl, &_cfg).unwrap();
+
+    let interface = I2CDisplayInterface::new(i2c);
+    let mut display = Ssd1306::new(interface, DisplaySize128x64, DisplayRotation::Rotate0)
+        .into_buffered_graphics_mode();
+    display.init().unwrap();
+
+    let text_style = MonoTextStyleBuilder::new()
+        .font(&FONT_8X13_ITALIC)
+        .text_color(BinaryColor::On)
+        .build();
+
+    Text::with_baseline("Hello world!", Point::zero(), text_style, Baseline::Top)
+        .draw(&mut display)
+        .unwrap();
+
+    Text::with_baseline("Hello Rust!", Point::new(0, 16), text_style, Baseline::Top)
+        .draw(&mut display)
+        .unwrap();
+
+    display.flush().unwrap();
+
     loop {
         Delay::delay_ms(10);
-        if button0.is_low() {
-            print!("button is pressed");
-            led0.set_high()?;
-            led0.set_low()?;
-        } else {
-            led0.set_low()?;
-            led0.set_high()?;
-        }
-
-        if button1.is_low() {
-            print!("button is pressed");
-            led1.set_high()?;
-            led1.set_low()?;
-        } else {
-            led1.set_low()?;
-            led1.set_high()?;
-        }
-
-        if button2.is_low() {
-            print!("button is pressed");
-            led2.set_high()?;
-            led2.set_low()?;
-        } else {
-            led2.set_low()?;
-            led2.set_high()?;
-        }
-
-        if button3.is_low() {
-            print!("button is pressed");
-            led3.set_high()?;
-            led3.set_low()?;
-        } else {
-            led3.set_low()?;
-            led3.set_high()?;
-        }
+        //        if button0.is_low() {
+        //            print!("button is pressed");
+        //            led0.set_high()?;
+        //            led0.set_low()?;
+        //        } else {
+        //            led0.set_low()?;
+        //            led0.set_high()?;
+        //        }
+        //
+        //        if button1.is_low() {
+        //            print!("button is pressed");
+        //            led1.set_high()?;
+        //            led1.set_low()?;
+        //        } else {
+        //            led1.set_low()?;
+        //            led1.set_high()?;
+        //        }
+        //
+        //        if button2.is_low() {
+        //            print!("button is pressed");
+        //            led2.set_high()?;
+        //            led2.set_low()?;
+        //        } else {
+        //            led2.set_low()?;
+        //            led2.set_high()?;
+        //        }
+        //
+        //        if button3.is_low() {
+        //            print!("button is pressed");
+        //            led3.set_high()?;
+        //            led3.set_low()?;
+        //        } else {
+        //            led3.set_low()?;
+        //            led3.set_high()?;
+        //        }
     }
 }
