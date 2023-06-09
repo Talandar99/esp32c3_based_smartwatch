@@ -9,7 +9,7 @@ use embedded_graphics::mono_font::ascii::*;
 use embedded_graphics::mono_font::iso_8859_14::FONT_8X13_ITALIC;
 use embedded_graphics::mono_font::MonoTextStyleBuilder;
 use embedded_graphics::pixelcolor::BinaryColor;
-use embedded_graphics::prelude::Point;
+use embedded_graphics::prelude::{DrawTarget, Point};
 use embedded_graphics::text::{Baseline, Text};
 use embedded_graphics::Drawable;
 use esp_idf_hal::delay::{Delay, FreeRtos};
@@ -49,56 +49,51 @@ fn main() -> anyhow::Result<()> {
     display.init().unwrap();
 
     let text_style = MonoTextStyleBuilder::new()
-        .font(&FONT_8X13_ITALIC)
+        .font(&FONT_6X13_BOLD)
         .text_color(BinaryColor::On)
         .build();
 
-    Text::with_baseline("Hello world!", Point::zero(), text_style, Baseline::Top)
-        .draw(&mut display)
-        .unwrap();
-
-    Text::with_baseline("Hello Rust!", Point::new(0, 16), text_style, Baseline::Top)
-        .draw(&mut display)
-        .unwrap();
-
-    display.flush().unwrap();
-
+    let mut text_line_0;
+    let mut text_line_1;
+    let mut text_line_2;
+    let mut text_line_3;
     loop {
-        Delay::delay_ms(10);
-        //        if button0.is_low() {
-        //            print!("button is pressed");
-        //            led0.set_high()?;
-        //            led0.set_low()?;
-        //        } else {
-        //            led0.set_low()?;
-        //            led0.set_high()?;
-        //        }
-        //
-        //        if button1.is_low() {
-        //            print!("button is pressed");
-        //            led1.set_high()?;
-        //            led1.set_low()?;
-        //        } else {
-        //            led1.set_low()?;
-        //            led1.set_high()?;
-        //        }
-        //
-        //        if button2.is_low() {
-        //            print!("button is pressed");
-        //            led2.set_high()?;
-        //            led2.set_low()?;
-        //        } else {
-        //            led2.set_low()?;
-        //            led2.set_high()?;
-        //        }
-        //
-        //        if button3.is_low() {
-        //            print!("button is pressed");
-        //            led3.set_high()?;
-        //            led3.set_low()?;
-        //        } else {
-        //            led3.set_low()?;
-        //            led3.set_high()?;
-        //        }
+        display.clear_buffer();
+        if button0.is_high() {
+            text_line_0 = "0000"
+        } else {
+            text_line_0 = ""
+        }
+
+        if button1.is_high() {
+            text_line_1 = "1111"
+        } else {
+            text_line_1 = ""
+        }
+
+        if button2.is_high() {
+            text_line_2 = "2222"
+        } else {
+            text_line_2 = ""
+        }
+
+        if button3.is_high() {
+            text_line_3 = "3333"
+        } else {
+            text_line_3 = ""
+        }
+        Text::with_baseline(&text_line_0, Point::zero(), text_style, Baseline::Top)
+            .draw(&mut display)
+            .unwrap();
+        Text::with_baseline(&text_line_1, Point::new(0, 16), text_style, Baseline::Top)
+            .draw(&mut display)
+            .unwrap();
+        Text::with_baseline(&text_line_2, Point::new(0, 32), text_style, Baseline::Top)
+            .draw(&mut display)
+            .unwrap();
+        Text::with_baseline(&text_line_3, Point::new(0, 48), text_style, Baseline::Top)
+            .draw(&mut display)
+            .unwrap();
+        display.flush().unwrap();
     }
 }
