@@ -24,36 +24,47 @@ fn main() -> anyhow::Result<()> {
     let mut button2 = PinDriver::input(peripherals.pins.gpio4)?;
     let mut button3 = PinDriver::input(peripherals.pins.gpio5)?;
 
-    button0.set_pull(Pull::Up)?;
-    //button1.set_pull(Pull::Up)?;
+    button0.set_pull(Pull::Down)?;
+    button1.set_pull(Pull::Down)?;
+    button2.set_pull(Pull::Down)?;
+    button3.set_pull(Pull::Down)?;
 
     loop {
-        //  Delay::delay_ms(10);
-        //  if button0.is_high() {
-        //      led0.set_high()?;
-        //      led1.set_low()?;
-        //      //FreeRtos::delay_ms(200);
-        //  } else {
-        //      led0.set_low()?;
-        //      led0.set_high()?;
-        //      //FreeRtos::delay_ms(200);
-        //  }
+        Delay::delay_ms(10);
+        if button0.is_low() {
+            print!("button is pressed");
+            led0.set_high()?;
+            led0.set_low()?;
+        } else {
+            led0.set_low()?;
+            led0.set_high()?;
+        }
 
-        led0.set_high()?;
-        FreeRtos::delay_ms(200);
-        led0.set_low()?;
-        FreeRtos::delay_ms(200);
-        led1.set_high()?;
-        FreeRtos::delay_ms(200);
-        led1.set_low()?;
-        FreeRtos::delay_ms(200);
-        led2.set_high()?;
-        FreeRtos::delay_ms(200);
-        led2.set_low()?;
-        FreeRtos::delay_ms(200);
-        led3.set_high()?;
-        FreeRtos::delay_ms(200);
-        led3.set_low()?;
-        FreeRtos::delay_ms(200);
+        if button1.is_low() {
+            print!("button is pressed");
+            led1.set_high()?;
+            led1.set_low()?;
+        } else {
+            led1.set_low()?;
+            led1.set_high()?;
+        }
+
+        if button2.is_low() {
+            print!("button is pressed");
+            led2.set_high()?;
+            led2.set_low()?;
+        } else {
+            led2.set_low()?;
+            led2.set_high()?;
+        }
+
+        if button3.is_low() {
+            print!("button is pressed");
+            led3.set_high()?;
+            led3.set_low()?;
+        } else {
+            led3.set_low()?;
+            led3.set_high()?;
+        }
     }
 }
