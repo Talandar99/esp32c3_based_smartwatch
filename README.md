@@ -13,6 +13,11 @@
 - https://github.com/esp-rs/espflash/tree/main/espflash#usage
 - https://github.com/esp-rs/esp-idf-hal
 - https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/
+- https://github.com/jamwaffles/ssd1306
+
+## Good to know 
+- ssd1306 resolution 128x64
+
 ## Pinout Diagram
 ![image](https://github.com/Talandar99/xiaio_esp32c3_rust/assets/32677600/4272fa4f-edb4-428f-9e6a-cc33f96864be)
 
