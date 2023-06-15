@@ -14,6 +14,7 @@
 - https://github.com/esp-rs/esp-idf-hal
 - https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/
 - https://github.com/jamwaffles/ssd1306
+- https://github.com/esp-rs/esp-wifi/blob/main/examples-esp32c3/examples/ble.rs
 
 ## Good to know 
 - ssd1306 resolution 128x64
