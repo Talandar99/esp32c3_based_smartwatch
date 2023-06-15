@@ -1,5 +1,4 @@
 use embedded_graphics::mono_font::ascii::*;
-use embedded_graphics::mono_font::iso_8859_14::FONT_8X13_ITALIC;
 use embedded_graphics::mono_font::MonoTextStyleBuilder;
 use embedded_graphics::pixelcolor::BinaryColor;
 use embedded_graphics::prelude::{DrawTarget, Point, Size};
@@ -110,44 +109,58 @@ fn main() -> anyhow::Result<()> {
     ) {
         if vec![2, 3, 4, 5, 6, 7, 8, 9, 0].contains(&number) {
             //A
+            pixel4x4(0 + x, 4 + y, display);
             pixel4x4(4 + x, 4 + y, display);
             pixel4x4(8 + x, 4 + y, display);
+            pixel4x4(12 + x, 4 + y, display);
         }
 
         if vec![1, 2, 3, 4, 7, 8, 9, 0].contains(&number) {
             //B
+            pixel4x4(12 + x, 4 + y, display);
             pixel4x4(12 + x, 8 + y, display);
             pixel4x4(12 + x, 12 + y, display);
+            pixel4x4(12 + x, 16 + y, display);
         }
 
         if vec![1, 3, 4, 5, 6, 7, 8, 9, 0].contains(&number) {
             //C
+            pixel4x4(12 + x, 16 + y, display);
             pixel4x4(12 + x, 20 + y, display);
             pixel4x4(12 + x, 24 + y, display);
+            pixel4x4(12 + x, 28 + y, display);
         }
 
         if vec![2, 3, 5, 6, 8, 9, 0].contains(&number) {
             //D
+            pixel4x4(0 + x, 28 + y, display);
             pixel4x4(4 + x, 28 + y, display);
             pixel4x4(8 + x, 28 + y, display);
+            pixel4x4(12 + x, 28 + y, display);
         }
 
         if vec![2, 6, 8, 0].contains(&number) {
             //E
+            pixel4x4(0 + x, 16 + y, display);
             pixel4x4(0 + x, 20 + y, display);
             pixel4x4(0 + x, 24 + y, display);
+            pixel4x4(0 + x, 28 + y, display);
         }
 
         if vec![4, 5, 6, 8, 9, 0].contains(&number) {
             //F
+            pixel4x4(0 + x, 4 + y, display);
             pixel4x4(0 + x, 8 + y, display);
             pixel4x4(0 + x, 12 + y, display);
+            pixel4x4(0 + x, 16 + y, display);
         }
 
         if vec![2, 3, 4, 5, 6, 8, 9].contains(&number) {
             //G
+            pixel4x4(0 + x, 16 + y, display);
             pixel4x4(4 + x, 16 + y, display);
             pixel4x4(8 + x, 16 + y, display);
+            pixel4x4(12 + x, 16 + y, display);
         }
     }
 
