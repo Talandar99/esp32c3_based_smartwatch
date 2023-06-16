@@ -1,6 +1,6 @@
 # BASED smartwatch
 ![image](https://github.com/Talandar99/based_smartwatch/assets/32677600/a8b15e11-c897-40c0-be7d-c0b6ae6ad2fb)
-## Goal (finctionality)
+## Goal (functionality)
 - music control via bluetooth
 - display notifications from phone (bluetooth)
 - display time
