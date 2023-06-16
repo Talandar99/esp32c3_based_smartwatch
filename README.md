@@ -18,6 +18,7 @@
 - [X] setup and flash scripts
 - [X] working buttons
 - [X] working ssd1306 display
+- [X] working fonts, shapes and pixels
 - [X] displaying button input
 - [X] displaying numbers via 7seg display
 - [ ] working bluetooth connection
