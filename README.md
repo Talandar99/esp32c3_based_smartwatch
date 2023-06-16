@@ -23,6 +23,9 @@
 - [X] displaying numbers via 7seg display
 - [ ] working bluetooth connection
 - [ ] working clock
+- [ ] controller can work on battery
+- [ ] displaying battery %
+- [ ] sleep mode 
 
 ## Usefull links
 - https://github.com/esp-rs/esp-idf-template/tree/master
