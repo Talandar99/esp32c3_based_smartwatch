@@ -1,12 +1,25 @@
-# xiaio esp32c3 rust template
-- This is template for xiaio_esp32c3 riscv mini development board project
-- It is based on this guide https://github.com/esp-rs/esp-idf-template/tree/master
-- This template include scripts for quality of life improvement
-## How to run?
+# BASED smartach
+![image](https://github.com/Talandar99/based_smartwatch/assets/32677600/a8b15e11-c897-40c0-be7d-c0b6ae6ad2fb)
+## Goal (finctionality)
+- music control via bluetooth
+- display notifications from phone (bluetooth)
+- display time
+- simple game?
+ 
+## How to flash?
 - connect board via usb-C
 - run `install_env_var_and_deps.sh` script for installing dependancies
 - run `build_and_run.sh` script for building and flashing 
 - **!!`build_and_run.sh` may require some adjustment based on your serial port !!**
+
+
+# Development
+## Milestones
+[X] setup and flash scripts
+[X] working buttons
+[X] working ssd1306 display
+[X] displayinh button input
+[X] displaying numbers via 7seg display
 
 ## Usefull links
 - https://github.com/esp-rs/esp-idf-template/tree/master
