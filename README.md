@@ -15,11 +15,13 @@
 
 # Development
 ## Milestones
-[X] setup and flash scripts
-[X] working buttons
-[X] working ssd1306 display
-[X] displayinh button input
-[X] displaying numbers via 7seg display
+- [X] setup and flash scripts
+- [X] working buttons
+- [X] working ssd1306 display
+- [X] displayinh button input
+- [X] displaying numbers via 7seg display
+- [] working bluetooth connection
+- [] working clock
 
 ## Usefull links
 - https://github.com/esp-rs/esp-idf-template/tree/master
