@@ -23,7 +23,7 @@
 - [X] displaying numbers via 7seg display
 - [ ] working bluetooth connection
 - [ ] working clock
-- [ ] controller can work on battery
+- [ ] controller can be powered by battery
 - [ ] displaying battery %
 - [ ] sleep mode 
 
