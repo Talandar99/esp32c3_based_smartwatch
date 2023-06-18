@@ -1,10 +1,11 @@
-# BASED smartwatch
+# BASEDwatch 
 ![image](https://github.com/Talandar99/based_smartwatch/assets/32677600/a8b15e11-c897-40c0-be7d-c0b6ae6ad2fb)
 ## Goal (functionality)
 - music control via bluetooth
 - display notifications from phone (bluetooth)
 - display time
-- simple game?
+- snake 
+- mini jack
  
 ## How to flash?
 - connect board via usb-C
@@ -21,8 +22,9 @@
 - [X] working fonts, shapes and pixels
 - [X] displaying button input
 - [X] displaying numbers via 7seg display
+- [X] working clock
+- [ ] update time in proper intervals
 - [ ] working bluetooth connection
-- [ ] working clock
 - [ ] controller can be powered by battery
 - [ ] displaying battery %
 - [ ] sleep mode 
@@ -34,6 +36,8 @@
 - https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/
 - https://github.com/jamwaffles/ssd1306
 - https://github.com/esp-rs/esp-wifi/blob/main/examples-esp32c3/examples/ble.rs
+- https://github.com/esp-rs/awesome-esp-rust#video-courses
+- https://lib.rs/crates/bluedroid
 
 ## Good to know 
 - ssd1306 resolution 128x64
