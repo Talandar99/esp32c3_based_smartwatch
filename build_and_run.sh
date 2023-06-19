@@ -4,5 +4,5 @@
 cargo build
 sudo chmod 666 /dev/ttyACM0 
 #export RUST_BACKTRACE=1
-#espflash --monitor /dev/ttyACM0 target/riscv32imc-esp-espidf/debug/xiaio-esp32c3-rust
-espflash /dev/ttyACM0 target/riscv32imc-esp-espidf/debug/xiaio-esp32c3-rust
+espflash --monitor /dev/ttyACM0 target/riscv32imc-esp-espidf/debug/xiaio-esp32c3-rust
+#espflash /dev/ttyACM0 target/riscv32imc-esp-espidf/debug/xiaio-esp32c3-rust
