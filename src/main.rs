@@ -85,21 +85,19 @@ fn main() -> anyhow::Result<()> {
         minutes: 0,
     };
     let system_time = SystemTime::now();
-    let duration_since_epoch = system_time.duration_since(SystemTime::UNIX_EPOCH).unwrap();
+    let duration_since_epoch = system_time.duration_since(system_time).unwrap();
     let mut newminutes = (duration_since_epoch.as_secs() / 60) % 60;
     let mut oldminutes = newminutes;
-    clock_time.set(7, 7);
+    clock_time.set(9, 26);
 
     loop {
-        let system_time = SystemTime::now();
-        let duration_since_epoch = system_time.duration_since(SystemTime::UNIX_EPOCH).unwrap();
+        let duration_since_epoch = system_time.duration_since(system_time).unwrap();
         newminutes = (duration_since_epoch.as_secs() / 60) % 60;
-        if oldminutes < newminutes {
+        if oldminutes != newminutes {
             oldminutes = newminutes;
             clock_time.increment_by_1_minute();
         }
         display.clear_buffer();
-        //clock_time.increment_by_1_minute();
         draw_7seg_clock(&mut display, clock_time.hours, clock_time.minutes);
 
         if button0.is_high() {

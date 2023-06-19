@@ -15,7 +15,11 @@
 
 
 # Development
-## Milestones
+## Currently working on
+- [ ] update time in proper intervals
+
+## TODO/Milestones
+
 - [X] setup and flash scripts
 - [X] working buttons
 - [X] working ssd1306 display
@@ -25,6 +29,7 @@
 - [X] working clock
 - [ ] update time in proper intervals
 - [ ] working bluetooth connection
+- [ ] connection diagram
 - [ ] controller can be powered by battery
 - [ ] displaying battery %
 - [ ] sleep mode 
@@ -38,7 +43,7 @@
 - https://github.com/esp-rs/esp-wifi/blob/main/examples-esp32c3/examples/ble.rs
 - https://github.com/esp-rs/awesome-esp-rust#video-courses
 - https://lib.rs/crates/bluedroid
-
+- https://lib.rs/crates/embedded-time
 ## Good to know 
 - ssd1306 resolution 128x64
 
