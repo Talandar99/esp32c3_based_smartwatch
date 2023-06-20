@@ -43,7 +43,7 @@
 - https://github.com/esp-rs/esp-wifi/blob/main/examples-esp32c3/examples/ble.rs
 - https://github.com/esp-rs/awesome-esp-rust#video-courses
 - https://lib.rs/crates/bluedroid
-- https://lib.rs/crates/embedded-time
+- https://github.com/ivmarkov/rust-esp32-std-demo/tree/main
 ## Good to know 
 - ssd1306 resolution 128x64
 

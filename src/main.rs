@@ -1,5 +1,7 @@
 pub mod clock;
 
+use std::time::Duration;
+use std::time::Instant;
 use std::time::SystemTime;
 
 use clock::*;
@@ -33,7 +35,7 @@ impl Time {
 }
 impl Time {
     fn increment_by_1_minute(&mut self) {
-        if self.minutes >= 59 {
+        if self.minutes > 59 {
             self.minutes = 0;
             self.hours = self.hours + 1;
         } else {
@@ -60,8 +62,8 @@ fn main() -> anyhow::Result<()> {
     button2.set_pull(Pull::Down)?;
     button3.set_pull(Pull::Down)?;
     //i2c
-    let sda = peripherals.pins.gpio6;
-    let scl = peripherals.pins.gpio7;
+    let mut sda = peripherals.pins.gpio6;
+    let mut scl = peripherals.pins.gpio7;
     let mut _cfg = i2c::config::Config::new().baudrate(400.kHz().into());
     let i2c = i2c::I2cDriver::new(peripherals.i2c0, sda, scl, &_cfg).unwrap();
 
@@ -84,19 +86,29 @@ fn main() -> anyhow::Result<()> {
         hours: 0,
         minutes: 0,
     };
-    let system_time = SystemTime::now();
-    let duration_since_epoch = system_time.duration_since(system_time).unwrap();
-    let mut newminutes = (duration_since_epoch.as_secs() / 60) % 60;
-    let mut oldminutes = newminutes;
-    clock_time.set(9, 26);
-
+    // let mut oldminutes = 0;
+    // let mut newminutes = 0;
+    // let system_time = SystemTime::now();
+    // let duration_since_epoch = system_time.duration_since(SystemTime::UNIX_EPOCH).unwrap();
+    // let secs = duration_since_epoch.as_secs();
+    // let minutes = (secs / 60) % 60;
+    // oldminutes = minutes;
+    // newminutes = oldminutes;
+    clock_time.set(21, 38);
+    let mut total_duration = Duration::new(0, 0);
     loop {
-        let duration_since_epoch = system_time.duration_since(system_time).unwrap();
-        newminutes = (duration_since_epoch.as_secs() / 60) % 60;
-        if oldminutes != newminutes {
-            oldminutes = newminutes;
-            clock_time.increment_by_1_minute();
-        }
+        let start_time = Instant::now();
+        //     let system_time = SystemTime::now();
+        //     let duration_since_epoch = system_time.duration_since(SystemTime::UNIX_EPOCH).unwrap();
+        //     let secs = duration_since_epoch.as_secs();
+        //     let minutes = (secs / 60) % 60;
+        //     newminutes = minutes;
+        //     if oldminutes < newminutes {
+        //         oldminutes = newminutes;
+        //         clock_time.increment_by_1_minute();
+        //     }
+
+        //     println!("{}", minutes);
         display.clear_buffer();
         draw_7seg_clock(&mut display, clock_time.hours, clock_time.minutes);
 
@@ -161,5 +173,12 @@ fn main() -> anyhow::Result<()> {
         //            .draw(&mut display)
         //            .unwrap();
         display.flush().unwrap();
+        let elapsed = start_time.elapsed();
+        total_duration += elapsed;
+
+        if total_duration >= Duration::from_secs(60) {
+            total_duration -= Duration::from_secs(60);
+            clock_time.increment_by_1_minute();
+        }
     }
 }

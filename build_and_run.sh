@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e 
 #IMPORTANT
 #change ttyACM0 for your port
 cargo build
