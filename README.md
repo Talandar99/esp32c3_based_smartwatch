@@ -48,6 +48,7 @@
 - ssd1306 resolution is 128x64
 - ssd1306 is monochromatic
 - DON'T connect 5V pin to any GPIO, it will kill board
+## Connections
 #### Buttons
 - 3V(esp32c3) into button(0)(left)  into gpio2 (esp32c3)
 - 3V(esp32c3) into button(1)(down)  into gpio3 (esp32c3)
