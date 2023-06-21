@@ -5,7 +5,6 @@
 - display notifications from phone (bluetooth)
 - display time
 - snake 
-- mini jack
  
 ## How to flash?
 - connect board via usb-C
@@ -16,8 +15,7 @@
 
 # Development
 ## Currently working on
-- [ ] update time in proper intervals
-
+- [ ] working bluetooth connection
 ## TODO/Milestones
 
 - [X] setup and flash scripts
@@ -27,7 +25,7 @@
 - [X] displaying button input
 - [X] displaying numbers via 7seg display
 - [X] working clock
-- [ ] update time in proper intervals
+- [X] update time in proper intervals
 - [ ] working bluetooth connection
 - [ ] connection diagram
 - [ ] controller can be powered by battery
