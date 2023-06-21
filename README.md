@@ -11,7 +11,7 @@
 - connect board via usb-C
 - run `install_env_var_and_deps.sh` script for installing dependancies
 - run `build_and_run.sh` script for building and flashing 
-- **!!`build_and_run.sh` may require some adjustment based on your serial port !!**
+- **!!`build_and_run.sh` may require some adjustment based on your serial port (USB port)!!**
 
 
 # Development
@@ -45,8 +45,19 @@
 - https://lib.rs/crates/bluedroid
 - https://github.com/ivmarkov/rust-esp32-std-demo/tree/main
 ## Good to know 
-- ssd1306 resolution 128x64
-
-## Pinout Diagram
+- ssd1306 resolution is 128x64
+- ssd1306 is monochromatic
+- DON'T connect 5V pin to any GPIO, it will kill board
+#### Buttons
+- 3V(esp32c3) into button(0)(left)  into gpio2 (esp32c3)
+- 3V(esp32c3) into button(1)(down)  into gpio3 (esp32c3)
+- 3V(esp32c3) into button(2)(up)    into gpio21(esp32c3)
+- 3V(esp32c3) into button(3)(right) into gpio20(esp32c3)
+#### monochromatic ssd1306
+- 5V(esp32c3) into VCC(ssd1306)
+- SDA(esp32c3) into SDA(ssd1306)
+- SCL(esp32c3) into SCL(ssd1306)
+- GND(esp32c3) into GND(ssd1306)
+## Board Pinout Diagram
 ![image](https://github.com/Talandar99/xiaio_esp32c3_rust/assets/32677600/4272fa4f-edb4-428f-9e6a-cc33f96864be)
 
