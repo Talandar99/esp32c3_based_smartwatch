@@ -24,11 +24,13 @@ use ssd1306::{I2CDisplayInterface, Ssd1306};
 struct Time {
     hours: u32,
     minutes: u32,
+    seconds: u32,
 }
 impl Time {
-    fn set(&mut self, new_hours: u32, new_minutes: u32) {
+    fn set(&mut self, new_hours: u32, new_minutes: u32, new_seconds: u32) {
         self.hours = new_hours;
         self.minutes = new_minutes;
+        self.seconds = new_seconds;
     }
 }
 impl Time {
@@ -41,6 +43,14 @@ impl Time {
         }
         if self.hours > 23 {
             self.hours = 0;
+        }
+    }
+    fn increment_by_1_second(&mut self) {
+        if self.seconds >= 59 {
+            self.seconds = 0;
+            self.increment_by_1_minute();
+        } else {
+            self.seconds = self.seconds + 1;
         }
     }
 }
@@ -80,17 +90,24 @@ fn main() -> anyhow::Result<()> {
         .stroke_color(BinaryColor::On)
         .build();
     //time
+
     let mut clock_time = Time {
         hours: 0,
         minutes: 0,
+        seconds: 0,
     };
 
-    clock_time.set(8, 17);
+    clock_time.set(21, 37, 00);
     let mut total_duration = Duration::new(0, 0);
     loop {
         let start_time = Instant::now();
         display.clear_buffer();
-        draw_7seg_clock(&mut display, clock_time.hours, clock_time.minutes);
+        draw_3x7segment_time_display(
+            &mut display,
+            clock_time.hours,
+            clock_time.minutes,
+            clock_time.seconds,
+        );
         if button_left.is_high() {
             Rectangle::new(Point::new(0, 48), Size::new(32, 16))
                 .into_styled(style_rectangle_selection)
@@ -115,14 +132,20 @@ fn main() -> anyhow::Result<()> {
                 .draw(&mut display)
                 .unwrap();
         }
-
         display.flush().unwrap();
+
+        //updating time
         let elapsed = start_time.elapsed();
         total_duration += elapsed;
-        if total_duration >= Duration::from_secs(60) {
-            total_duration -= Duration::from_secs(60);
-            clock_time.increment_by_1_minute();
+        if total_duration >= Duration::from_secs(1) {
+            total_duration -= Duration::from_secs(1);
+            clock_time.increment_by_1_second();
         }
+
+        //        if total_duration >= Duration::from_secs(60) {
+        //            total_duration -= Duration::from_secs(60);
+        //            clock_time.increment_by_1_minute();
+        //        }
     }
 }
 // this was in loop

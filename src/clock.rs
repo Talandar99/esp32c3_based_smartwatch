@@ -1,25 +1,53 @@
 use esp_idf_hal::i2c;
 use ssd1306::{size::DisplaySize128x64, Ssd1306};
 
-pub fn draw_7seg_clock(
+pub fn draw_2x7segment_time_display(
     display: &mut Ssd1306<
         ssd1306::prelude::I2CInterface<i2c::I2cDriver<'_>>,
         DisplaySize128x64,
         ssd1306::mode::BufferedGraphicsMode<DisplaySize128x64>,
     >,
-    hours: u32,
-    minutes: u32,
+    left: u32,
+    right: u32,
 ) {
-    let minutes0 = minutes / 10;
-    let minutes1 = minutes % 10;
-    let hours0 = hours / 10;
-    let hours1 = hours % 10;
-    seven_seg_display(hours0, display, 16, 0);
-    seven_seg_display(hours1, display, 36, 0);
+    let left0 = left / 10;
+    let left1 = left % 10;
+    let right0 = right / 10;
+    let right1 = right % 10;
+    single_7segment_display(left0, display, 16, 0);
+    single_7segment_display(left1, display, 36, 0);
     pixel4x4(61, 8, display);
     pixel4x4(61, 24, display);
-    seven_seg_display(minutes0, display, 74, 0);
-    seven_seg_display(minutes1, display, 94, 0);
+    single_7segment_display(right0, display, 74, 0);
+    single_7segment_display(right1, display, 94, 0);
+}
+
+pub fn draw_3x7segment_time_display(
+    display: &mut Ssd1306<
+        ssd1306::prelude::I2CInterface<i2c::I2cDriver<'_>>,
+        DisplaySize128x64,
+        ssd1306::mode::BufferedGraphicsMode<DisplaySize128x64>,
+    >,
+    left: u32,
+    middle: u32,
+    right: u32,
+) {
+    let left0 = left / 10;
+    let left1 = left % 10;
+    let middle0 = middle / 10;
+    let middle1 = middle % 10;
+    let right0 = right / 10;
+    let right1 = right % 10;
+    single_7segment_display(left0, display, 0, 0);
+    single_7segment_display(left1, display, 17, 0);
+    pixel4x4(38, 8, display);
+    pixel4x4(38, 24, display);
+    single_7segment_display(middle0, display, 47, 0);
+    single_7segment_display(middle1, display, 65, 0);
+    pixel4x4(86, 8, display);
+    pixel4x4(86, 24, display);
+    single_7segment_display(right0, display, 94, 0);
+    single_7segment_display(right1, display, 112, 0);
 }
 
 pub fn pixel2x2(
@@ -63,7 +91,7 @@ pub fn pixel4x4(
     display.set_pixel(x + 2, y + 3, true);
     display.set_pixel(x + 3, y + 3, true);
 }
-pub fn seven_seg_display(
+pub fn single_7segment_display(
     number: u32,
     display: &mut Ssd1306<
         ssd1306::prelude::I2CInterface<i2c::I2cDriver<'_>>,
