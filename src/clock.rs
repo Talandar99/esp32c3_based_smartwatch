@@ -39,7 +39,7 @@ pub fn draw_3x7segment_time_display(
     let right0 = right / 10;
     let right1 = right % 10;
     single_7segment_display(left0, display, 0, 0);
-    single_7segment_display(left1, display, 17, 0);
+    single_7segment_display(left1, display, 18, 0);
     pixel4x4(38, 8, display);
     pixel4x4(38, 24, display);
     single_7segment_display(middle0, display, 47, 0);
