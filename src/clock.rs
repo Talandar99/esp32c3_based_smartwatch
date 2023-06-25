@@ -42,8 +42,8 @@ pub fn draw_3x7segment_time_display(
     single_7segment_display(left1, display, 18, 0);
     pixel4x4(38, 8, display);
     pixel4x4(38, 24, display);
-    single_7segment_display(middle0, display, 47, 0);
-    single_7segment_display(middle1, display, 65, 0);
+    single_7segment_display(middle0, display, 46, 0);
+    single_7segment_display(middle1, display, 64, 0);
     pixel4x4(86, 8, display);
     pixel4x4(86, 24, display);
     single_7segment_display(right0, display, 94, 0);

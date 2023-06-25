@@ -6,13 +6,13 @@ use embedded_graphics::mono_font::MonoTextStyleBuilder;
 use embedded_graphics::pixelcolor::BinaryColor;
 use embedded_graphics::prelude::{DrawTarget, Point, Size};
 use embedded_graphics::primitives::{Circle, Primitive, PrimitiveStyleBuilder, Rectangle};
-use std::time::Duration;
-use std::time::Instant;
-//use embedded_graphics::text::{Baseline, Text};
+use embedded_graphics::text::Baseline;
+use embedded_graphics::text::Text;
 use embedded_graphics::Drawable;
-//use esp_idf_hal::delay::{Delay, FreeRtos};
 use esp_idf_hal::gpio::*;
 use esp_idf_hal::i2c;
+use std::time::Duration;
+use std::time::Instant;
 
 use esp_idf_hal::peripherals::Peripherals;
 use esp_idf_hal::units::FromValueType;
@@ -54,6 +54,169 @@ impl Time {
         }
     }
 }
+fn draw_rectangle_buttons(
+    display: &mut Ssd1306<
+        ssd1306::prelude::I2CInterface<i2c::I2cDriver<'_>>,
+        DisplaySize128x64,
+        ssd1306::mode::BufferedGraphicsMode<DisplaySize128x64>,
+    >,
+    button_pressed: Vec<bool>,
+) {
+    let style_rectangle_selection = PrimitiveStyleBuilder::new()
+        .stroke_width(1)
+        .stroke_color(BinaryColor::On)
+        .build();
+    if button_pressed[0] {
+        Rectangle::new(Point::new(0, 48), Size::new(32, 16))
+            .into_styled(style_rectangle_selection)
+            .draw(display)
+            .unwrap();
+    }
+
+    if button_pressed[1] {
+        Rectangle::new(Point::new(32, 48), Size::new(32, 16))
+            .into_styled(style_rectangle_selection)
+            .draw(display)
+            .unwrap();
+    }
+
+    if button_pressed[2] {
+        Rectangle::new(Point::new(64, 48), Size::new(32, 16))
+            .into_styled(style_rectangle_selection)
+            .draw(display)
+            .unwrap();
+    }
+
+    if button_pressed[3] {
+        Rectangle::new(Point::new(96, 48), Size::new(32, 16))
+            .into_styled(style_rectangle_selection)
+            .draw(display)
+            .unwrap();
+    }
+}
+
+fn navigation_button_bar(
+    display: &mut Ssd1306<
+        ssd1306::prelude::I2CInterface<i2c::I2cDriver<'_>>,
+        DisplaySize128x64,
+        ssd1306::mode::BufferedGraphicsMode<DisplaySize128x64>,
+    >,
+    button_pressed: Vec<bool>,
+) {
+    let text_style_small_on = MonoTextStyleBuilder::new()
+        .font(&FONT_5X8)
+        .text_color(BinaryColor::On)
+        .build();
+    let text_style_small_off = MonoTextStyleBuilder::new()
+        .font(&FONT_5X8)
+        .text_color(BinaryColor::Off)
+        .build();
+
+    let style_rectangle_selection = PrimitiveStyleBuilder::new()
+        .stroke_width(1)
+        .fill_color(BinaryColor::On)
+        .build();
+
+    for i in 0..128 {
+        display.set_pixel(i, 50, true);
+    }
+    if button_pressed[0] {
+        Rectangle::new(Point::new(0, 52), Size::new(32, 16))
+            .into_styled(style_rectangle_selection)
+            .draw(display)
+            .unwrap();
+        Text::with_baseline(
+            "UNDO",
+            Point::new(6, 54),
+            text_style_small_off,
+            Baseline::Top,
+        )
+        .draw(display)
+        .unwrap();
+    } else {
+        Text::with_baseline(
+            "UNDO",
+            Point::new(6, 54),
+            text_style_small_on,
+            Baseline::Top,
+        )
+        .draw(display)
+        .unwrap();
+    }
+
+    if button_pressed[1] {
+        Rectangle::new(Point::new(32, 52), Size::new(32, 16))
+            .into_styled(style_rectangle_selection)
+            .draw(display)
+            .unwrap();
+
+        Text::with_baseline(
+            "DOWN",
+            Point::new(40, 54),
+            text_style_small_off,
+            Baseline::Top,
+        )
+        .draw(display)
+        .unwrap();
+    } else {
+        Text::with_baseline(
+            "DOWN",
+            Point::new(40, 54),
+            text_style_small_on,
+            Baseline::Top,
+        )
+        .draw(display)
+        .unwrap();
+    }
+
+    if button_pressed[2] {
+        Rectangle::new(Point::new(64, 52), Size::new(32, 16))
+            .into_styled(style_rectangle_selection)
+            .draw(display)
+            .unwrap();
+        Text::with_baseline(
+            " UP ",
+            Point::new(70, 54),
+            text_style_small_off,
+            Baseline::Top,
+        )
+        .draw(display)
+        .unwrap();
+    } else {
+        Text::with_baseline(
+            " UP ",
+            Point::new(70, 54),
+            text_style_small_on,
+            Baseline::Top,
+        )
+        .draw(display)
+        .unwrap();
+    }
+
+    if button_pressed[3] {
+        Rectangle::new(Point::new(96, 52), Size::new(32, 16))
+            .into_styled(style_rectangle_selection)
+            .draw(display)
+            .unwrap();
+        Text::with_baseline(
+            " OK ",
+            Point::new(100, 54),
+            text_style_small_off,
+            Baseline::Top,
+        )
+        .draw(display)
+        .unwrap();
+    } else {
+        Text::with_baseline(
+            " OK ",
+            Point::new(100, 54),
+            text_style_small_on,
+            Baseline::Top,
+        )
+        .draw(display)
+        .unwrap();
+    }
+}
 
 fn main() -> anyhow::Result<()> {
     esp_idf_sys::link_patches();
@@ -85,10 +248,6 @@ fn main() -> anyhow::Result<()> {
         .font(&FONT_5X8)
         .text_color(BinaryColor::On)
         .build();
-    let style_rectangle_selection = PrimitiveStyleBuilder::new()
-        .stroke_width(1)
-        .stroke_color(BinaryColor::On)
-        .build();
     //time
 
     let mut clock_time = Time {
@@ -99,41 +258,32 @@ fn main() -> anyhow::Result<()> {
 
     clock_time.set(21, 37, 00);
     let mut total_duration = Duration::new(0, 0);
+    let mut button_pressed: Vec<bool>;
     loop {
+        button_pressed = vec![false, false, false, false];
         let start_time = Instant::now();
         display.clear_buffer();
+        if button_left.is_high() {
+            button_pressed[0] = true;
+        }
+        if button_down.is_high() {
+            button_pressed[1] = true;
+        }
+        if button_up.is_high() {
+            button_pressed[2] = true;
+        }
+        if button_right.is_high() {
+            button_pressed[3] = true;
+        }
+
+        navigation_button_bar(&mut display, button_pressed);
         draw_3x7segment_time_display(
             &mut display,
             clock_time.hours,
             clock_time.minutes,
             clock_time.seconds,
         );
-        if button_left.is_high() {
-            Rectangle::new(Point::new(0, 48), Size::new(32, 16))
-                .into_styled(style_rectangle_selection)
-                .draw(&mut display)
-                .unwrap();
-        }
-        if button_down.is_high() {
-            Rectangle::new(Point::new(32, 48), Size::new(32, 16))
-                .into_styled(style_rectangle_selection)
-                .draw(&mut display)
-                .unwrap();
-        }
-        if button_up.is_high() {
-            Rectangle::new(Point::new(64, 48), Size::new(32, 16))
-                .into_styled(style_rectangle_selection)
-                .draw(&mut display)
-                .unwrap();
-        }
-        if button_right.is_high() {
-            Rectangle::new(Point::new(96, 48), Size::new(32, 16))
-                .into_styled(style_rectangle_selection)
-                .draw(&mut display)
-                .unwrap();
-        }
         display.flush().unwrap();
-
         //updating time
         let elapsed = start_time.elapsed();
         total_duration += elapsed;
