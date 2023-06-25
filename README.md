@@ -1,4 +1,4 @@
-# BASEDwatch 
+# simple fully open source smartwatch without bullshit like telemetry or pedometer 
 ![image](https://github.com/Talandar99/based_smartwatch/assets/32677600/a8b15e11-c897-40c0-be7d-c0b6ae6ad2fb)
 ## Goal (functionality)
 - music control via bluetooth
