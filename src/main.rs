@@ -1,5 +1,7 @@
+pub mod button_bar;
 pub mod clock;
 
+use button_bar::*;
 use clock::*;
 use embedded_graphics::mono_font::ascii::*;
 use embedded_graphics::mono_font::MonoTextStyleBuilder;
@@ -54,170 +56,36 @@ impl Time {
         }
     }
 }
-fn draw_rectangle_buttons(
-    display: &mut Ssd1306<
-        ssd1306::prelude::I2CInterface<i2c::I2cDriver<'_>>,
-        DisplaySize128x64,
-        ssd1306::mode::BufferedGraphicsMode<DisplaySize128x64>,
-    >,
-    button_pressed: Vec<bool>,
-) {
-    let style_rectangle_selection = PrimitiveStyleBuilder::new()
-        .stroke_width(1)
-        .stroke_color(BinaryColor::On)
-        .build();
-    if button_pressed[0] {
-        Rectangle::new(Point::new(0, 48), Size::new(32, 16))
-            .into_styled(style_rectangle_selection)
-            .draw(display)
-            .unwrap();
-    }
-
-    if button_pressed[1] {
-        Rectangle::new(Point::new(32, 48), Size::new(32, 16))
-            .into_styled(style_rectangle_selection)
-            .draw(display)
-            .unwrap();
-    }
-
-    if button_pressed[2] {
-        Rectangle::new(Point::new(64, 48), Size::new(32, 16))
-            .into_styled(style_rectangle_selection)
-            .draw(display)
-            .unwrap();
-    }
-
-    if button_pressed[3] {
-        Rectangle::new(Point::new(96, 48), Size::new(32, 16))
-            .into_styled(style_rectangle_selection)
-            .draw(display)
-            .unwrap();
-    }
+enum View {
+    clock_hours_minutes,
+    clock_hours_minutes_seconds,
+    menu,
+    settings,
+}
+#[derive(Clone)]
+struct MenuState {
+    selected_option: i8,
+    all_options: Vec<String>,
 }
 
-fn navigation_button_bar(
-    display: &mut Ssd1306<
-        ssd1306::prelude::I2CInterface<i2c::I2cDriver<'_>>,
-        DisplaySize128x64,
-        ssd1306::mode::BufferedGraphicsMode<DisplaySize128x64>,
-    >,
-    button_pressed: Vec<bool>,
-) {
-    let text_style_small_on = MonoTextStyleBuilder::new()
-        .font(&FONT_5X8)
-        .text_color(BinaryColor::On)
-        .build();
-    let text_style_small_off = MonoTextStyleBuilder::new()
-        .font(&FONT_5X8)
-        .text_color(BinaryColor::Off)
-        .build();
-
-    let style_rectangle_selection = PrimitiveStyleBuilder::new()
-        .stroke_width(1)
-        .fill_color(BinaryColor::On)
-        .build();
-
-    for i in 0..128 {
-        display.set_pixel(i, 50, true);
-    }
-    if button_pressed[0] {
-        Rectangle::new(Point::new(0, 52), Size::new(32, 16))
-            .into_styled(style_rectangle_selection)
-            .draw(display)
-            .unwrap();
-        Text::with_baseline(
-            "UNDO",
-            Point::new(6, 54),
-            text_style_small_off,
-            Baseline::Top,
-        )
-        .draw(display)
-        .unwrap();
+fn update_menu_state(button_pressed: Vec<bool>, old_menu_state: MenuState) -> MenuState {
+    if button_pressed[1] | button_pressed[2] {
+        let mut new_menu_state = old_menu_state.clone();
+        if button_pressed[1] {
+            if new_menu_state.selected_option < new_menu_state.all_options.len() as i8 {
+                new_menu_state.selected_option = new_menu_state.selected_option + 1;
+            }
+        }
+        if button_pressed[2] {
+            if new_menu_state.selected_option > 0 {
+                new_menu_state.selected_option = new_menu_state.selected_option - 1;
+            }
+        }
+        return new_menu_state;
     } else {
-        Text::with_baseline(
-            "UNDO",
-            Point::new(6, 54),
-            text_style_small_on,
-            Baseline::Top,
-        )
-        .draw(display)
-        .unwrap();
-    }
-
-    if button_pressed[1] {
-        Rectangle::new(Point::new(32, 52), Size::new(32, 16))
-            .into_styled(style_rectangle_selection)
-            .draw(display)
-            .unwrap();
-
-        Text::with_baseline(
-            "DOWN",
-            Point::new(40, 54),
-            text_style_small_off,
-            Baseline::Top,
-        )
-        .draw(display)
-        .unwrap();
-    } else {
-        Text::with_baseline(
-            "DOWN",
-            Point::new(40, 54),
-            text_style_small_on,
-            Baseline::Top,
-        )
-        .draw(display)
-        .unwrap();
-    }
-
-    if button_pressed[2] {
-        Rectangle::new(Point::new(64, 52), Size::new(32, 16))
-            .into_styled(style_rectangle_selection)
-            .draw(display)
-            .unwrap();
-        Text::with_baseline(
-            " UP ",
-            Point::new(70, 54),
-            text_style_small_off,
-            Baseline::Top,
-        )
-        .draw(display)
-        .unwrap();
-    } else {
-        Text::with_baseline(
-            " UP ",
-            Point::new(70, 54),
-            text_style_small_on,
-            Baseline::Top,
-        )
-        .draw(display)
-        .unwrap();
-    }
-
-    if button_pressed[3] {
-        Rectangle::new(Point::new(96, 52), Size::new(32, 16))
-            .into_styled(style_rectangle_selection)
-            .draw(display)
-            .unwrap();
-        Text::with_baseline(
-            " OK ",
-            Point::new(100, 54),
-            text_style_small_off,
-            Baseline::Top,
-        )
-        .draw(display)
-        .unwrap();
-    } else {
-        Text::with_baseline(
-            " OK ",
-            Point::new(100, 54),
-            text_style_small_on,
-            Baseline::Top,
-        )
-        .draw(display)
-        .unwrap();
+        return old_menu_state;
     }
 }
-
 fn main() -> anyhow::Result<()> {
     esp_idf_sys::link_patches();
     let peripherals = Peripherals::take().unwrap();
@@ -245,20 +113,33 @@ fn main() -> anyhow::Result<()> {
     display.init().unwrap();
     //styles
     let text_style_small = MonoTextStyleBuilder::new()
-        .font(&FONT_5X8)
+        .font(&FONT_6X10)
         .text_color(BinaryColor::On)
         .build();
     //time
-
     let mut clock_time = Time {
         hours: 0,
         minutes: 0,
         seconds: 0,
     };
-
     clock_time.set(21, 37, 00);
     let mut total_duration = Duration::new(0, 0);
+    //loop Variables
     let mut button_pressed: Vec<bool>;
+    let mut selected_view: View = View::clock_hours_minutes;
+    let mut menu_state = MenuState {
+        selected_option: 0,
+        all_options: vec![
+            "First".to_string(),
+            "Secon".to_string(),
+            "Third".to_string(),
+            "Another".to_string(),
+            "AAAno".to_string(),
+            "zczxc".to_string(),
+            "sdasd".to_string(),
+        ],
+    };
+
     loop {
         button_pressed = vec![false, false, false, false];
         let start_time = Instant::now();
@@ -271,18 +152,42 @@ fn main() -> anyhow::Result<()> {
         }
         if button_up.is_high() {
             button_pressed[2] = true;
+            selected_view = View::menu;
         }
         if button_right.is_high() {
             button_pressed[3] = true;
+            selected_view = View::settings;
         }
 
-        navigation_button_bar(&mut display, button_pressed);
-        draw_3x7segment_time_display(
-            &mut display,
-            clock_time.hours,
-            clock_time.minutes,
-            clock_time.seconds,
-        );
+        match selected_view {
+            View::clock_hours_minutes_seconds => {
+                draw_3x7segment_time_display(
+                    &mut display,
+                    clock_time.hours,
+                    clock_time.minutes,
+                    clock_time.seconds,
+                );
+                navigation_button_bar(&mut display, button_pressed.clone());
+                if button_pressed[3].clone() {
+                    selected_view = View::menu;
+                }
+            }
+            View::clock_hours_minutes => {
+                draw_2x7segment_time_display(&mut display, clock_time.hours, clock_time.minutes);
+                navigation_button_bar(&mut display, button_pressed.clone());
+                if button_pressed[3].clone() {
+                    selected_view = View::menu;
+                }
+            }
+            View::menu => {
+                menu_state = update_menu_state(button_pressed.clone(), menu_state);
+                //TODO drawing menu
+                navigation_button_bar(&mut display, button_pressed.clone());
+            }
+            View::settings => {
+                navigation_button_bar(&mut display, button_pressed);
+            }
+        }
         display.flush().unwrap();
         //updating time
         let elapsed = start_time.elapsed();
@@ -291,7 +196,7 @@ fn main() -> anyhow::Result<()> {
             total_duration -= Duration::from_secs(1);
             clock_time.increment_by_1_second();
         }
-
+        // need more testing
         //        if total_duration >= Duration::from_secs(60) {
         //            total_duration -= Duration::from_secs(60);
         //            clock_time.increment_by_1_minute();
