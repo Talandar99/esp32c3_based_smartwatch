@@ -152,11 +152,9 @@ fn main() -> anyhow::Result<()> {
         }
         if button_up.is_high() {
             button_pressed[2] = true;
-            selected_view = View::menu;
         }
         if button_right.is_high() {
             button_pressed[3] = true;
-            selected_view = View::settings;
         }
 
         match selected_view {
