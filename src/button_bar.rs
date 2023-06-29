@@ -50,6 +50,128 @@ pub fn draw_rectangle_buttons(
     }
 }
 
+pub fn main_screen_button_bar(
+    display: &mut Ssd1306<
+        ssd1306::prelude::I2CInterface<i2c::I2cDriver<'_>>,
+        DisplaySize128x64,
+        ssd1306::mode::BufferedGraphicsMode<DisplaySize128x64>,
+    >,
+    button_pressed: Vec<bool>,
+) {
+    let text_style_small_on = MonoTextStyleBuilder::new()
+        .font(&FONT_5X8)
+        .text_color(BinaryColor::On)
+        .build();
+    let text_style_small_off = MonoTextStyleBuilder::new()
+        .font(&FONT_5X8)
+        .text_color(BinaryColor::Off)
+        .build();
+
+    let style_rectangle_selection = PrimitiveStyleBuilder::new()
+        .stroke_width(1)
+        .fill_color(BinaryColor::On)
+        .build();
+
+    for i in 0..128 {
+        display.set_pixel(i, 50, true);
+    }
+    if button_pressed[0] {
+        Rectangle::new(Point::new(0, 52), Size::new(32, 16))
+            .into_styled(style_rectangle_selection)
+            .draw(display)
+            .unwrap();
+        Text::with_baseline(
+            "TODO",
+            Point::new(6, 54),
+            text_style_small_off,
+            Baseline::Top,
+        )
+        .draw(display)
+        .unwrap();
+    } else {
+        Text::with_baseline(
+            "TODO",
+            Point::new(6, 54),
+            text_style_small_on,
+            Baseline::Top,
+        )
+        .draw(display)
+        .unwrap();
+    }
+
+    if button_pressed[1] {
+        Rectangle::new(Point::new(32, 52), Size::new(32, 16))
+            .into_styled(style_rectangle_selection)
+            .draw(display)
+            .unwrap();
+
+        Text::with_baseline(
+            "TODO",
+            Point::new(40, 54),
+            text_style_small_off,
+            Baseline::Top,
+        )
+        .draw(display)
+        .unwrap();
+    } else {
+        Text::with_baseline(
+            "TODO",
+            Point::new(40, 54),
+            text_style_small_on,
+            Baseline::Top,
+        )
+        .draw(display)
+        .unwrap();
+    }
+
+    if button_pressed[2] {
+        Rectangle::new(Point::new(64, 52), Size::new(32, 16))
+            .into_styled(style_rectangle_selection)
+            .draw(display)
+            .unwrap();
+        Text::with_baseline(
+            "TODO",
+            Point::new(70, 54),
+            text_style_small_off,
+            Baseline::Top,
+        )
+        .draw(display)
+        .unwrap();
+    } else {
+        Text::with_baseline(
+            "TODO",
+            Point::new(70, 54),
+            text_style_small_on,
+            Baseline::Top,
+        )
+        .draw(display)
+        .unwrap();
+    }
+
+    if button_pressed[3] {
+        Rectangle::new(Point::new(96, 52), Size::new(32, 16))
+            .into_styled(style_rectangle_selection)
+            .draw(display)
+            .unwrap();
+        Text::with_baseline(
+            "MENU",
+            Point::new(100, 54),
+            text_style_small_off,
+            Baseline::Top,
+        )
+        .draw(display)
+        .unwrap();
+    } else {
+        Text::with_baseline(
+            "MENU",
+            Point::new(100, 54),
+            text_style_small_on,
+            Baseline::Top,
+        )
+        .draw(display)
+        .unwrap();
+    }
+}
 pub fn navigation_button_bar(
     display: &mut Ssd1306<
         ssd1306::prelude::I2CInterface<i2c::I2cDriver<'_>>,
@@ -81,7 +203,7 @@ pub fn navigation_button_bar(
             .draw(display)
             .unwrap();
         Text::with_baseline(
-            "UNDO",
+            "BACK",
             Point::new(6, 54),
             text_style_small_off,
             Baseline::Top,
@@ -90,7 +212,7 @@ pub fn navigation_button_bar(
         .unwrap();
     } else {
         Text::with_baseline(
-            "UNDO",
+            "BACK",
             Point::new(6, 54),
             text_style_small_on,
             Baseline::Top,

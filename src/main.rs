@@ -125,36 +125,55 @@ fn main() -> anyhow::Result<()> {
     clock_time.set(21, 37, 00);
     let mut total_duration = Duration::new(0, 0);
     //loop Variables
-    let mut button_pressed: Vec<bool>;
+    let mut button_was_just_pressed: Vec<bool>;
+    let mut button_is_pressed: Vec<bool> = vec![false, false, false, false];
+
     let mut selected_view: View = View::clock_hours_minutes;
     let mut menu_state = MenuState {
         selected_option: 0,
         all_options: vec![
-            "First".to_string(),
-            "Secon".to_string(),
-            "Third".to_string(),
-            "Another".to_string(),
-            "AAAno".to_string(),
-            "zczxc".to_string(),
-            "sdasd".to_string(),
+            "HoursMinSec clock".to_string(),
+            "HoursMin clock".to_string(),
+            "Snake".to_string(),
+            "BLE".to_string(),
         ],
     };
 
     loop {
-        button_pressed = vec![false, false, false, false];
+        button_was_just_pressed = vec![false, false, false, false];
         let start_time = Instant::now();
         display.clear_buffer();
         if button_left.is_high() {
-            button_pressed[0] = true;
+            if button_is_pressed[0] == false {
+                button_was_just_pressed[0] = true;
+            }
+            button_is_pressed[0] = true;
+        } else {
+            button_is_pressed[0] = false;
         }
         if button_down.is_high() {
-            button_pressed[1] = true;
+            if button_is_pressed[1] == false {
+                button_was_just_pressed[1] = true;
+            }
+            button_is_pressed[1] = true;
+        } else {
+            button_is_pressed[1] = false;
         }
         if button_up.is_high() {
-            button_pressed[2] = true;
+            if button_is_pressed[2] == false {
+                button_was_just_pressed[2] = true;
+            }
+            button_is_pressed[2] = true;
+        } else {
+            button_is_pressed[2] = false;
         }
         if button_right.is_high() {
-            button_pressed[3] = true;
+            if button_is_pressed[3] == false {
+                button_was_just_pressed[3] = true;
+            }
+            button_is_pressed[3] = true;
+        } else {
+            button_is_pressed[3] = false;
         }
 
         match selected_view {
@@ -165,25 +184,28 @@ fn main() -> anyhow::Result<()> {
                     clock_time.minutes,
                     clock_time.seconds,
                 );
-                navigation_button_bar(&mut display, button_pressed.clone());
-                if button_pressed[3].clone() {
+                main_screen_button_bar(&mut display, button_is_pressed.clone());
+                if button_was_just_pressed[3].clone() {
                     selected_view = View::menu;
                 }
             }
             View::clock_hours_minutes => {
                 draw_2x7segment_time_display(&mut display, clock_time.hours, clock_time.minutes);
-                navigation_button_bar(&mut display, button_pressed.clone());
-                if button_pressed[3].clone() {
+                main_screen_button_bar(&mut display, button_was_just_pressed.clone());
+                if button_was_just_pressed[3].clone() {
                     selected_view = View::menu;
                 }
             }
             View::menu => {
-                menu_state = update_menu_state(button_pressed.clone(), menu_state);
-                //TODO drawing menu
-                navigation_button_bar(&mut display, button_pressed.clone());
+                menu_state = update_menu_state(button_was_just_pressed.clone(), menu_state.clone());
+                if button_was_just_pressed[0].clone() {
+                    selected_view = View::clock_hours_minutes;
+                }
+                draw_menu_state(&mut display, menu_state.clone());
+                navigation_button_bar(&mut display, button_is_pressed.clone());
             }
             View::settings => {
-                navigation_button_bar(&mut display, button_pressed);
+                navigation_button_bar(&mut display, button_was_just_pressed);
             }
         }
         display.flush().unwrap();
@@ -199,6 +221,56 @@ fn main() -> anyhow::Result<()> {
         //            total_duration -= Duration::from_secs(60);
         //            clock_time.increment_by_1_minute();
         //        }
+    }
+}
+
+fn draw_menu_state(
+    display: &mut Ssd1306<
+        ssd1306::prelude::I2CInterface<i2c::I2cDriver<'_>>,
+        DisplaySize128x64,
+        ssd1306::mode::BufferedGraphicsMode<DisplaySize128x64>,
+    >,
+    menu_state: MenuState,
+) {
+    let text_style_small_on = MonoTextStyleBuilder::new()
+        .font(&FONT_6X12)
+        .text_color(BinaryColor::On)
+        .build();
+    let text_style_small_off = MonoTextStyleBuilder::new()
+        .font(&FONT_6X12)
+        .text_color(BinaryColor::Off)
+        .build();
+    let style_rectangle_selection = PrimitiveStyleBuilder::new()
+        .stroke_width(1)
+        .fill_color(BinaryColor::On)
+        .build();
+    for i in 0..menu_state.all_options.len() {
+        if i > 3 {
+            break;
+        }
+        if i as i8 == menu_state.selected_option {
+            Rectangle::new(Point::new(0, i as i32 * 12), Size::new(128, 12))
+                .into_styled(style_rectangle_selection)
+                .draw(display)
+                .unwrap();
+            Text::with_baseline(
+                &menu_state.all_options[i],
+                Point::new(6, i as i32 * 12),
+                text_style_small_off,
+                Baseline::Top,
+            )
+            .draw(display)
+            .unwrap();
+        } else {
+            Text::with_baseline(
+                &menu_state.all_options[i],
+                Point::new(6, i as i32 * 12),
+                text_style_small_on,
+                Baseline::Top,
+            )
+            .draw(display)
+            .unwrap();
+        }
     }
 }
 // this was in loop
