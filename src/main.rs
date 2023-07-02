@@ -216,11 +216,6 @@ fn main() -> anyhow::Result<()> {
             total_duration -= Duration::from_secs(1);
             clock_time.increment_by_1_second();
         }
-        // need more testing
-        //        if total_duration >= Duration::from_secs(60) {
-        //            total_duration -= Duration::from_secs(60);
-        //            clock_time.increment_by_1_minute();
-        //        }
     }
 }
 
@@ -273,40 +268,3 @@ fn draw_menu_state(
         }
     }
 }
-// this was in loop
-//let style = PrimitiveStyleBuilder::new()
-//    .stroke_width(1)
-//    .stroke_color(BinaryColor::On)
-//    .build();
-//Rectangle::new(Point::new(16, 0), Size::new(94, 32))
-//    .into_styled(style)
-//    .draw(&mut display)
-//    .unwrap();
-//---------------------------------------------------
-//Rectangle::new(Point::new(0, 0), Size::new(128, 36))
-//    .into_styled(style)
-//    .draw(&mut display)
-//    .unwrap();
-//---------------------------------------------------
-//        Circle::new(Point::new(10, 10), 50)
-//            .into_styled(
-//                PrimitiveStyleBuilder::new()
-//                    .stroke_width(2)
-//                    .stroke_color(BinaryColor::On)
-//                    .build(),
-//            )
-//            .draw(&mut display)
-//            .unwrap();
-
-//        Text::with_baseline("MENU", Point::new(4, 52), text_style_small, Baseline::Top)
-//            .draw(&mut display)
-//            .unwrap();
-//        Text::with_baseline("", Point::new(36, 52), text_style_small, Baseline::Top)
-//            .draw(&mut display)
-//            .unwrap();
-//        Text::with_baseline("", Point::new(68, 52), text_style_small, Baseline::Top)
-//            .draw(&mut display)
-//            .unwrap();
-//        Text::with_baseline("LOCK", Point::new(100, 52), text_style_small, Baseline::Top)
-//            .draw(&mut display)
-//            .unwrap();
