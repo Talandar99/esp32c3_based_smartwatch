@@ -14,7 +14,7 @@
 
 
 # Development
-## Currently working on
+## Currently 
 - [ ] working bluetooth connection
 ## TODO/Milestones
 
@@ -39,8 +39,6 @@
 - https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/
 - https://github.com/jamwaffles/ssd1306
 - https://github.com/esp-rs/esp-wifi/blob/main/examples-esp32c3/examples/ble.rs
-- https://github.com/esp-rs/awesome-esp-rust#video-courses
-- https://lib.rs/crates/bluedroid
 - https://github.com/ivmarkov/rust-esp32-std-demo/tree/main
 ## Good to know 
 - ssd1306 resolution is 128x64

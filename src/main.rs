@@ -23,6 +23,10 @@ use ssd1306::rotation::DisplayRotation;
 use ssd1306::size::DisplaySize128x64;
 use ssd1306::{I2CDisplayInterface, Ssd1306};
 
+struct Settings {
+    selected_clock: u32,
+}
+
 struct Time {
     hours: u32,
     minutes: u32,
@@ -72,7 +76,7 @@ fn update_menu_state(button_pressed: Vec<bool>, old_menu_state: MenuState) -> Me
     if button_pressed[1] | button_pressed[2] {
         let mut new_menu_state = old_menu_state.clone();
         if button_pressed[1] {
-            if new_menu_state.selected_option < new_menu_state.all_options.len() as i8 {
+            if new_menu_state.selected_option < new_menu_state.all_options.len() as i8 - 1 {
                 new_menu_state.selected_option = new_menu_state.selected_option + 1;
             }
         }
@@ -86,22 +90,70 @@ fn update_menu_state(button_pressed: Vec<bool>, old_menu_state: MenuState) -> Me
         return old_menu_state;
     }
 }
+
+fn draw_menu_state(
+    display: &mut Ssd1306<
+        ssd1306::prelude::I2CInterface<i2c::I2cDriver<'_>>,
+        DisplaySize128x64,
+        ssd1306::mode::BufferedGraphicsMode<DisplaySize128x64>,
+    >,
+    menu_state: MenuState,
+) {
+    let text_style_small_on = MonoTextStyleBuilder::new()
+        .font(&FONT_6X12)
+        .text_color(BinaryColor::On)
+        .build();
+    let text_style_small_off = MonoTextStyleBuilder::new()
+        .font(&FONT_6X12)
+        .text_color(BinaryColor::Off)
+        .build();
+    let style_rectangle_selection = PrimitiveStyleBuilder::new()
+        .stroke_width(1)
+        .fill_color(BinaryColor::On)
+        .build();
+
+    for i in 0..menu_state.all_options.len() {
+        if i > 3 {
+            break;
+        }
+        if i as i8 == menu_state.selected_option {
+            Rectangle::new(Point::new(0, i as i32 * 12), Size::new(128, 12))
+                .into_styled(style_rectangle_selection)
+                .draw(display)
+                .unwrap();
+            Text::with_baseline(
+                &menu_state.all_options[i],
+                Point::new(6, i as i32 * 12),
+                text_style_small_off,
+                Baseline::Top,
+            )
+            .draw(display)
+            .unwrap();
+        } else {
+            Text::with_baseline(
+                &menu_state.all_options[i],
+                Point::new(6, i as i32 * 12),
+                text_style_small_on,
+                Baseline::Top,
+            )
+            .draw(display)
+            .unwrap();
+        }
+    }
+}
+
 fn main() -> anyhow::Result<()> {
     esp_idf_sys::link_patches();
     let peripherals = Peripherals::take().unwrap();
     //Buttons
-    let mut button0 = PinDriver::input(peripherals.pins.gpio2)?;
-    let mut button1 = PinDriver::input(peripherals.pins.gpio3)?;
-    let mut button2 = PinDriver::input(peripherals.pins.gpio21)?;
-    let mut button3 = PinDriver::input(peripherals.pins.gpio20)?;
-    button0.set_pull(Pull::Down)?;
-    button1.set_pull(Pull::Down)?;
-    button2.set_pull(Pull::Down)?;
-    button3.set_pull(Pull::Down)?;
-    let button_left = &button0;
-    let button_down = &button1;
-    let button_up = &button2;
-    let button_right = &button3;
+    let mut button_left = PinDriver::input(peripherals.pins.gpio2)?;
+    let mut button_down = PinDriver::input(peripherals.pins.gpio3)?;
+    let mut button_up = PinDriver::input(peripherals.pins.gpio21)?;
+    let mut button_right = PinDriver::input(peripherals.pins.gpio20)?;
+    button_left.set_pull(Pull::Down)?;
+    button_down.set_pull(Pull::Down)?;
+    button_up.set_pull(Pull::Down)?;
+    button_right.set_pull(Pull::Down)?;
     //i2c
     let sda = peripherals.pins.gpio6;
     let scl = peripherals.pins.gpio7;
@@ -111,23 +163,17 @@ fn main() -> anyhow::Result<()> {
     let mut display = Ssd1306::new(interface, DisplaySize128x64, DisplayRotation::Rotate0)
         .into_buffered_graphics_mode();
     display.init().unwrap();
-    //styles
-    let text_style_small = MonoTextStyleBuilder::new()
-        .font(&FONT_6X10)
-        .text_color(BinaryColor::On)
-        .build();
-    //time
+
+    //loop Variables
     let mut clock_time = Time {
         hours: 0,
         minutes: 0,
         seconds: 0,
     };
-    clock_time.set(21, 37, 00);
     let mut total_duration = Duration::new(0, 0);
-    //loop Variables
     let mut button_was_just_pressed: Vec<bool>;
     let mut button_is_pressed: Vec<bool> = vec![false, false, false, false];
-
+    let mut settings = Settings { selected_clock: 0 };
     let mut selected_view: View = View::clock_hours_minutes;
     let mut menu_state = MenuState {
         selected_option: 0,
@@ -139,6 +185,7 @@ fn main() -> anyhow::Result<()> {
         ],
     };
 
+    clock_time.set(00, 00, 00);
     loop {
         button_was_just_pressed = vec![false, false, false, false];
         let start_time = Instant::now();
@@ -215,56 +262,6 @@ fn main() -> anyhow::Result<()> {
         if total_duration >= Duration::from_secs(1) {
             total_duration -= Duration::from_secs(1);
             clock_time.increment_by_1_second();
-        }
-    }
-}
-
-fn draw_menu_state(
-    display: &mut Ssd1306<
-        ssd1306::prelude::I2CInterface<i2c::I2cDriver<'_>>,
-        DisplaySize128x64,
-        ssd1306::mode::BufferedGraphicsMode<DisplaySize128x64>,
-    >,
-    menu_state: MenuState,
-) {
-    let text_style_small_on = MonoTextStyleBuilder::new()
-        .font(&FONT_6X12)
-        .text_color(BinaryColor::On)
-        .build();
-    let text_style_small_off = MonoTextStyleBuilder::new()
-        .font(&FONT_6X12)
-        .text_color(BinaryColor::Off)
-        .build();
-    let style_rectangle_selection = PrimitiveStyleBuilder::new()
-        .stroke_width(1)
-        .fill_color(BinaryColor::On)
-        .build();
-    for i in 0..menu_state.all_options.len() {
-        if i > 3 {
-            break;
-        }
-        if i as i8 == menu_state.selected_option {
-            Rectangle::new(Point::new(0, i as i32 * 12), Size::new(128, 12))
-                .into_styled(style_rectangle_selection)
-                .draw(display)
-                .unwrap();
-            Text::with_baseline(
-                &menu_state.all_options[i],
-                Point::new(6, i as i32 * 12),
-                text_style_small_off,
-                Baseline::Top,
-            )
-            .draw(display)
-            .unwrap();
-        } else {
-            Text::with_baseline(
-                &menu_state.all_options[i],
-                Point::new(6, i as i32 * 12),
-                text_style_small_on,
-                Baseline::Top,
-            )
-            .draw(display)
-            .unwrap();
         }
     }
 }
